@@ -305,6 +305,10 @@ function activarNo() {
     if (contadorNo >= 5) {
         imgGif.src = "https://i.ibb.co/bjp4FSRr/STK-20240720-WA0017.webp";
         textoNo.innerHTML = "Solo botón Sí disponible 💕";
+        // Hacer que el gif se quede visible por más tiempo
+        setTimeout(() => {
+            imgGif.style.opacity = '1';
+        }, 100);
     } else if (contadorNo >= 4) {
         imgGif.src = "https://i.ibb.co/b560P9cq/Grabacin2026-02-08233029-ezgif-com-video-to-gif-converter.gif";
         textoNo.innerHTML = "¡YA BASTA POR FAVOR! 😭💔";
@@ -474,6 +478,83 @@ function activarModoMovimientoLibre() {
     }, 12);
 }
 
+// Variables para el giroscopio
+let gyroEnabled = false;
+let settledButtons = new Set();
+
+// Detectar cuando cada botón termina su animación
+function setupGyroscope() {
+    const allButtons = document.querySelectorAll('.btn-si-flood');
+    
+    allButtons.forEach(btn => {
+        btn.addEventListener('animationend', () => {
+            settledButtons.add(btn);
+        });
+    });
+    
+    // Activar giroscopio
+    if (window.DeviceOrientationEvent) {
+        // Pedir permiso en iOS 13+
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // Crear un botón temporal para pedir permiso (iOS requiere interacción del usuario)
+            const permitBtn = document.createElement('button');
+            permitBtn.textContent = 'Activar movimiento';
+            permitBtn.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; padding:10px 20px; background:#f06292; color:white; border:none; border-radius:8px; font-size:16px;';
+            document.body.appendChild(permitBtn);
+            
+            permitBtn.addEventListener('click', () => {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            enableGyroscope();
+                            permitBtn.remove();
+                        }
+                    })
+                    .catch(console.error);
+            });
+        } else {
+            // Para Android y navegadores que no requieren permiso
+            enableGyroscope();
+        }
+    }
+}
+
+function enableGyroscope() {
+    gyroEnabled = true;
+    window.addEventListener('deviceorientation', handleOrientation);
+}
+
+function handleOrientation(event) {
+    if (!gyroEnabled || settledButtons.size === 0) return;
+    
+    // Obtener la inclinación del dispositivo
+    const beta = event.beta || 0;   // Adelante-atrás (-180 a 180)
+    const gamma = event.gamma || 0; // Izquierda-derecha (-90 a 90)
+    
+    // Convertir a valores de desplazamiento
+    const moveX = (gamma / 90) * 40;  // Hasta 40px horizontal
+    const moveY = (beta / 180) * 40;  // Hasta 40px vertical
+    
+    // Aplicar movimiento a botones que ya cayeron
+    settledButtons.forEach(btn => {
+        // Guardar la posición original si no existe
+        if (!btn.dataset.originalX) {
+            const rect = btn.getBoundingClientRect();
+            btn.dataset.originalX = rect.left;
+            btn.dataset.originalY = rect.top;
+        }
+        
+        // Aplicar desplazamiento relativo
+        btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        btn.style.transition = 'transform 0.1s ease-out';
+    });
+}
+
+// Configurar giroscopio después de crear los botones
+setTimeout(() => {
+    setupGyroscope();
+}, 2000);
+
 btnNo.addEventListener("click", activarNo);
 btnNo.addEventListener("touchstart", (e) => {
     e.preventDefault();
@@ -495,73 +576,6 @@ btnSi.addEventListener("click", () => {
         </style>
     `;
 });
-
-// Variables para el giroscopio
-let gyroEnabled = false;
-let tiltX = 0;
-let tiltY = 0;
-
-// Detectar cuando las animaciones terminan para activar el giroscopio
-setTimeout(() => {
-    // Activar giroscopio después de que los botones hayan caído
-    if (window.DeviceOrientationEvent) {
-        // Pedir permiso en iOS 13+
-        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission()
-                .then(permissionState => {
-                    if (permissionState === 'granted') {
-                        enableGyroscope();
-                    }
-                })
-                .catch(console.error);
-        } else {
-            // Para Android y navegadores que no requieren permiso
-            enableGyroscope();
-        }
-    }
-}, 4000); // Esperar 4 segundos (tiempo para que caigan los botones)
-
-function enableGyroscope() {
-    gyroEnabled = true;
-    window.addEventListener('deviceorientation', handleOrientation);
-}
-
-function handleOrientation(event) {
-    if (!gyroEnabled) return;
-    
-    // Obtener la inclinación del dispositivo
-    // beta: inclinación adelante-atrás (-180 a 180)
-    // gamma: inclinación izquierda-derecha (-90 a 90)
-    const beta = event.beta || 0;
-    const gamma = event.gamma || 0;
-    
-    // Convertir a valores de desplazamiento más manejables
-    tiltX = gamma / 90; // Normalizar entre -1 y 1
-    tiltY = beta / 180; // Normalizar entre -1 y 1
-    
-    // Aplicar el movimiento a todos los botones que ya cayeron
-    const allButtons = document.querySelectorAll('.btn-si-flood');
-    allButtons.forEach(btn => {
-        // Verificar si la animación ya terminó
-        const computedStyle = window.getComputedStyle(btn);
-        const animationState = computedStyle.animationPlayState;
-        
-        if (animationState === 'running') return; // Si aún está animando, no aplicar gyro
-        
-        // Obtener posición actual del botón
-        const currentTransform = computedStyle.transform;
-        const matrix = new DOMMatrix(currentTransform);
-        
-        // Calcular nuevo desplazamiento basado en la inclinación
-        const maxMove = 30; // Máximo de píxeles que se puede mover
-        const moveX = tiltX * maxMove;
-        const moveY = tiltY * maxMove;
-        
-        // Aplicar transformación con el desplazamiento por giroscopio
-        btn.style.transform = `translate(${matrix.m41 + moveX}px, ${matrix.m42 + moveY}px) scale(1) rotate(${matrix.m11}deg)`;
-        btn.style.transition = 'transform 0.1s ease-out';
-    });
-}
 
 </script>
 </body>

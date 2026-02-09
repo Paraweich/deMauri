@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Valentín</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcccb 40%, #ff80ab 70%, #e91e63 100%);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        .heart-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: #ff69b4;
+            animation: rain 8s linear infinite;
+            opacity: 0.7;
+        }
+        .heart:nth-child(odd) {
+            color: #c2185b;
+            font-size: 18px;
+            animation-duration: 10s;
+        }
+        .heart:nth-child(3n) {
+            color: #ff80ab;
+            font-size: 25px;
+            animation-duration: 12s;
+            opacity: 0.9;
+        }
+        @keyframes rain {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            width: 420px;
+            max-width: 90%;
+            position: relative;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+        /* Animación de shake suave y corta */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -1px) rotate(-0.5deg); }
+            20% { transform: translate(-2px, 0px) rotate(0.5deg); }
+            30% { transform: translate(2px, 1px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(0.5deg); }
+            50% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+            60% { transform: translate(-2px, 0px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-0.5deg); }
+            80% { transform: translate(-1px, -1px) rotate(0.5deg); }
+            90% { transform: translate(1px, 1px) rotate(0deg); }
+            100% { transform: translate(1px, -1px) rotate(-0.5deg); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        h1 {
+            color: #c2185b;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        #textoNo {
+            display: none;
+            color: #d81b60;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        img {
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+        }
+        #imgGif {
+            width: 232px !important;
+            height: 234px !important;
+            object-fit: contain;
+            background: #fff;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        button {
+            padding: 14px 35px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.4s ease, opacity 0.8s ease;
+            position: relative;
+        }
+        #btnSi {
+            background-color: #f06292;
+            color: white;
+        }
+        #btnNo {
+            background-color: #90a4ae;
+            color: white;
+            position: relative;
+            transition: left 0.5s ease-out, top 0.5s ease-out, transform 0.3s ease;
+            pointer-events: auto;
+            z-index: 999;
+        }
+        #btnNo.moving {
+            transition: left 0.25s linear, top 0.25s linear, transform 0.3s ease;
+            position: fixed !important;
+        }
+        .mini-si {
+            position: absolute;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #f06292;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            pointer-events: none;
+            z-index: 1000;
+            animation: flyOut 4s forwards;
+        }
+        @keyframes flyOut {
+            0% { opacity: 1; transform: scale(0.6) translate(0,0); }
+            100% { opacity: 0; transform: scale(2) translate(var(--tx), var(--ty)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="heart-rain" id="heartRain"></div>
+    <div class="card" id="card">
+        <h1 id="titulo">¿Quieres ser mi San Valentín? ❤️</h1>
+        <p id="textoNo"></p>
+        <img id="imgGif" src="https://i.ibb.co/Gfkxj1m4/Grabacindepantalla2026-02-08212818-ezgif-com-video-to-gif-converter.gif" alt="Gif inicial" >
+        <div class="btn-container">
+            <button id="btnSi">¡SÍ!</button>
+            <button id="btnNo">No</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script>
+        // Lluvia fija de corazones
+        const heartRain = document.getElementById("heartRain");
+        for (let i = 0; i < 80; i++) {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.innerHTML = "❤️";
+            heart.style.left = Math.random() * 100 + "%";
+            heart.style.animationDuration = (Math.random() * 8 + 6) + "s"; // velocidad variada
+            heart.style.animationDelay = Math.random() * 5 + "s";
+            heart.style.opacity = Math.random() * 0.5 + 0.5;
+            heart.style.fontSize = Math.random() * 15 + 20 + "px";
+            heartRain.appendChild(heart);
+        }
+
+        const btnNo = document.getElementById("btnNo");
+        const btnSi = document.getElementById("btnSi");
+        const card = document.getElementById("card");
+        const textoNo = document.getElementById("textoNo");
+        const imgGif = document.getElementById("imgGif");
+        const container = document.body;
+
+        let escalaSi = 1;
+        let escalaNo = 1;
+        let primeraVez = true;
+        let contadorNo = 0;
+        let isMovingMode = false;
+        let moveInterval = null;
+        let velocidadFactor = 1;
+
+        function aplicarShake() {
+            card.classList.add('shake');
+            setTimeout(() => {
+                card.classList.remove('shake');
+            }, 500); // Duración de la animación
+        }
+
+        function activarNo() {
+            contadorNo++;
+            textoNo.style.display = "block";
+
+            if (contadorNo >= 4) {
+                imgGif.src = "https://i.ibb.co/b560P9cq/Grabacin2026-02-08233029-ezgif-com-video-to-gif-converter.gif";
+                textoNo.innerHTML = "¡YA BASTA POR FAVOR! 😭💔";
+            } else if (contadorNo >= 3) {
+                textoNo.innerHTML = "¡YA BASTA! 💔 ¡AHORA TENÉS QUE ATRAPARME! 🔥";
+                imgGif.src = "https://i.ibb.co/C5dZstcx/Grabacindepantalla2026-02-08212636-ezgif-com-video-to-gif-converter.gif";
+                if (!isMovingMode) activarModoMovimientoLibre();
+            } else if (contadorNo >= 2) {
+                textoNo.innerHTML = "¿POR QUÉ DECIS NO TODAVIA? 😭💔";
+                imgGif.src = "https://i.ibb.co/C5dZstcx/Grabacindepantalla2026-02-08212636-ezgif-com-video-to-gif-converter.gif";
+            } else {
+                textoNo.innerHTML = "¿POR QUÉ APRETÁS EL NO? 😭";
+                imgGif.src = "https://i.ibb.co/C5dZstcx/Grabacindepantalla2026-02-08212636-ezgif-com-video-to-gif-converter.gif";
+            }
+
+            imgGif.style.display = 'none';
+            imgGif.offsetHeight;
+            imgGif.style.display = 'block';
+
+            escalaSi = escalaSi * 1.30;
+            btnSi.style.transform = `scale(${escalaSi})`;
+
+            escalaNo = Math.max(0.3, escalaNo * 0.80);
+            btnNo.style.transform = `scale(${escalaNo})`;
+
+            if (primeraVez && contadorNo >= 1) {
+                btnNo.style.position = "fixed";
+                btnNo.style.left = (window.innerWidth / 2 - btnNo.offsetWidth / 2) + 'px';
+                btnNo.style.top = (window.innerHeight / 2 + 80) + 'px';
+                primeraVez = false;
+            }
+
+            if (!isMovingMode && contadorNo < 3) {
+                const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - 100) + 50;
+                const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - 100) + 50;
+                btnNo.style.left = `${x}px`;
+                btnNo.style.top = `${y}px`;
+            }
+
+            // Aplicamos el temblor a la tarjeta cada vez
+            aplicarShake();
+
+            // 5ta oprimida: explosión de mini "SÍ" + desaparición del botón Sí + No super chico y más rápido
+            if (contadorNo === 5) {
+                btnSi.style.transform = `scale(${escalaSi * 2})`;
+                btnSi.style.opacity = '0';
+                btnSi.style.transition = 'transform 0.7s ease-out, opacity 0.7s ease-out';
+                btnSi.style.pointerEvents = 'none';
+
+                // Hacer No super chico
+                escalaNo = 0.1;
+                btnNo.style.transform = `scale(${escalaNo})`;
+
+                // Aumentar velocidad de movimiento
+                velocidadFactor = 2;
+
+                setTimeout(() => {
+                    for (let i = 0; i < 60; i++) {
+                        const mini = document.createElement('div');
+                        mini.className = 'mini-si';
+                        mini.textContent = '¡SÍ!';
+                        mini.style.left = Math.random() * 100 + 'vw';
+                        mini.style.top = Math.random() * 100 + 'vh';
+                        mini.style.setProperty('--tx', (Math.random() - 0.5) * 1000 + 'px');
+                        mini.style.setProperty('--ty', (Math.random() - 0.5) * 1000 + 'px');
+                        mini.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                        mini.style.color = ['#f06292', '#c2185b', '#ff80ab', '#ffffff'][Math.floor(Math.random()*4)];
+                        container.appendChild(mini);
+                        setTimeout(() => mini.remove(), 5000);
+                    }
+                }, 300);
+            }
+        }
+
+        function activarModoMovimientoLibre() {
+            isMovingMode = true;
+            btnNo.classList.add('moving');
+
+            let dx = (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 150);
+            let dy = (Math.random() > 0.5 ? 1 : -1) * (80 + Math.random() * 80);
+
+            moveInterval = setInterval(() => {
+                if (!isMovingMode) return;
+
+                let currentLeft = parseFloat(btnNo.style.left) || window.innerWidth / 2;
+                let currentTop = parseFloat(btnNo.style.top) || window.innerHeight / 2;
+
+                currentLeft += dx * 0.016 * 2.35 * velocidadFactor;
+                currentTop += dy * 0.016 * 2.35 * velocidadFactor;
+
+                if (currentLeft < 30 || currentLeft > window.innerWidth - btnNo.offsetWidth - 30) {
+                    dx = -dx * (1.0 + Math.random() * 0.3);
+                    dy += (Math.random() - 0.5) * 20;
+                }
+                if (currentTop < 30 || currentTop > window.innerHeight - btnNo.offsetHeight - 30) {
+                    dy = -dy * (1.0 + Math.random() * 0.3);
+                    dx += (Math.random() - 0.5) * 40;
+                }
+
+                if (Math.random() < 0.06) {
+                    dx = (Math.random() > 0.5 ? 1 : -1) * (140 + Math.random() * 140);
+                    dy = (Math.random() > 0.5 ? 1 : -1) * (70 + Math.random() * 90);
+                }
+
+                btnNo.style.left = `${Math.max(30, Math.min(window.innerWidth - btnNo.offsetWidth - 30, currentLeft))}px`;
+                btnNo.style.top = `${Math.max(30, Math.min(window.innerHeight - btnNo.offsetHeight - 30, currentTop))}px`;
+            }, 12);
+        }
+
+        btnNo.addEventListener("click", activarNo);
+        btnNo.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            activarNo();
+        });
+
+        btnSi.addEventListener("click", () => {
+            if (moveInterval) clearInterval(moveInterval);
+            document.body.innerHTML = `
+                <h1 style="color:#c2185b; text-align:center; margin-top:40vh; font-size:3em; text-shadow: 2px 2px 10px rgba(194,24,91,0.5);">
+                    ¡SABÍA QUE DIRÍAS QUE SÍ! 😍❤️
+                </h1>
+            `;
+        });
+    </script>
+</body>
+</html>

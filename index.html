@@ -344,9 +344,10 @@ function activarNo() {
 
     // 5ta oprimida: explosión del botón Sí + lluvia de botones Sí que caen
     if (contadorNo === 5) {
-        btnSi.style.transform = `scale(${escalaSi * 2})`;
+        // Hacer desaparecer completamente el botón Sí original con efecto de explosión
+        btnSi.style.transform = `scale(0)`;
         btnSi.style.opacity = '0';
-        btnSi.style.transition = 'transform 0.7s ease-out, opacity 0.7s ease-out';
+        btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
         btnSi.style.pointerEvents = 'none';
 
         setTimeout(() => {
@@ -355,8 +356,8 @@ function activarNo() {
             const btnContainer = document.querySelector('.btn-container');
             const btnContainerRect = btnContainer.getBoundingClientRect();
             
-            // Punto de origen (donde estaba el botón Sí)
-            const centerX = btnContainerRect.left - cardRect.left + (btnContainerRect.width / 4);
+            // Punto de origen inicial (donde estaba el botón Sí)
+            const initialCenterX = btnContainerRect.left - cardRect.left + (btnContainerRect.width / 4);
             const centerY = btnContainerRect.top - cardRect.top + (btnContainerRect.height / 2);
             
             const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081', '#d81b60'];
@@ -370,7 +371,12 @@ function activarNo() {
                     
                     btnFlood.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
                     
-                    // Posición inicial en el centro
+                    // MOVER EL PUNTO DE ORIGEN de izquierda a derecha
+                    const progress = i / 350; // Progreso de 0 a 1
+                    const movementRange = cardRect.width - 100; // Rango de movimiento
+                    const centerX = 50 + (progress * movementRange); // Se mueve de izquierda a derecha
+                    
+                    // Posición inicial en el centro móvil
                     btnFlood.style.left = centerX + 'px';
                     btnFlood.style.top = centerY + 'px';
                     

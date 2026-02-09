@@ -357,13 +357,15 @@ function activarNo() {
 
     // 5ta oprimida: explosión del botón Sí + lluvia de botones Sí que caen
     if (contadorNo === 5) {
-        // Hacer desaparecer completamente el botón Sí original con efecto de explosión
-        btnSi.style.transform = `scale(0)`;
-        btnSi.style.opacity = '0';
-        btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-        btnSi.style.pointerEvents = 'none';
-
+        // Esperar 4 segundos adicionales antes de hacer desaparecer el botón Sí
         setTimeout(() => {
+            // Hacer desaparecer completamente el botón Sí original con efecto de explosión
+            btnSi.style.transform = `scale(0)`;
+            btnSi.style.opacity = '0';
+            btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+            btnSi.style.pointerEvents = 'none';
+
+            setTimeout(() => {
             const card = document.querySelector('.card');
             const cardRect = card.getBoundingClientRect();
             
@@ -440,6 +442,7 @@ function activarNo() {
                 }, i * 5); // Crear botones muy rápido para explosión masiva
             }
         }, 300);
+        }, 4000); // Esperar 4 segundos adicionales antes de la explosión
     }
     
     if (contadorNo === 6) {
@@ -479,81 +482,61 @@ function activarModoMovimientoLibre() {
 }
 
 // Variables para el giroscopio
-let gyroEnabled = false;
-let settledButtons = new Set();
+let gyroActive = false;
+let buttonsReady = false;
 
-// Detectar cuando cada botón termina su animación
-function setupGyroscope() {
-    const allButtons = document.querySelectorAll('.btn-si-flood');
-    
-    allButtons.forEach(btn => {
-        btn.addEventListener('animationend', () => {
-            settledButtons.add(btn);
+// Activar giroscopio automáticamente después de que los botones caigan
+setTimeout(() => {
+    buttonsReady = true;
+    requestGyroPermission();
+}, 5000); // 5 segundos después de presionar No por quinta vez
+
+function requestGyroPermission() {
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        // iOS 13+ requiere permiso explícito
+        const permitBtn = document.createElement('button');
+        permitBtn.textContent = '📱 Toca para activar movimiento';
+        permitBtn.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; padding:12px 24px; background:#f06292; color:white; border:none; border-radius:12px; font-size:16px; font-weight:bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);';
+        document.body.appendChild(permitBtn);
+        
+        permitBtn.addEventListener('click', () => {
+            DeviceMotionEvent.requestPermission()
+                .then(response => {
+                    if (response === 'granted') {
+                        startGyroscope();
+                        permitBtn.remove();
+                    }
+                })
+                .catch(console.error);
         });
-    });
-    
-    // Activar giroscopio
-    if (window.DeviceOrientationEvent) {
-        // Pedir permiso en iOS 13+
-        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-            // Crear un botón temporal para pedir permiso (iOS requiere interacción del usuario)
-            const permitBtn = document.createElement('button');
-            permitBtn.textContent = 'Activar movimiento';
-            permitBtn.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; padding:10px 20px; background:#f06292; color:white; border:none; border-radius:8px; font-size:16px;';
-            document.body.appendChild(permitBtn);
-            
-            permitBtn.addEventListener('click', () => {
-                DeviceOrientationEvent.requestPermission()
-                    .then(permissionState => {
-                        if (permissionState === 'granted') {
-                            enableGyroscope();
-                            permitBtn.remove();
-                        }
-                    })
-                    .catch(console.error);
-            });
-        } else {
-            // Para Android y navegadores que no requieren permiso
-            enableGyroscope();
-        }
+    } else {
+        // Android y otros navegadores
+        startGyroscope();
     }
 }
 
-function enableGyroscope() {
-    gyroEnabled = true;
-    window.addEventListener('deviceorientation', handleOrientation);
-}
-
-function handleOrientation(event) {
-    if (!gyroEnabled || settledButtons.size === 0) return;
+function startGyroscope() {
+    gyroActive = true;
     
-    // Obtener la inclinación del dispositivo
-    const beta = event.beta || 0;   // Adelante-atrás (-180 a 180)
-    const gamma = event.gamma || 0; // Izquierda-derecha (-90 a 90)
-    
-    // Convertir a valores de desplazamiento
-    const moveX = (gamma / 90) * 40;  // Hasta 40px horizontal
-    const moveY = (beta / 180) * 40;  // Hasta 40px vertical
-    
-    // Aplicar movimiento a botones que ya cayeron
-    settledButtons.forEach(btn => {
-        // Guardar la posición original si no existe
-        if (!btn.dataset.originalX) {
-            const rect = btn.getBoundingClientRect();
-            btn.dataset.originalX = rect.left;
-            btn.dataset.originalY = rect.top;
-        }
+    window.addEventListener('deviceorientation', (event) => {
+        if (!gyroActive || !buttonsReady) return;
         
-        // Aplicar desplazamiento relativo
-        btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
-        btn.style.transition = 'transform 0.1s ease-out';
-    });
+        // Obtener orientación del dispositivo
+        const gamma = event.gamma || 0; // Izquierda-derecha (-90 a 90)
+        const beta = event.beta || 0;   // Adelante-atrás (-180 a 180)
+        
+        // Calcular desplazamiento (invertido para que sea más intuitivo)
+        const moveX = (gamma / 90) * 50;
+        const moveY = (beta / 180) * 50;
+        
+        // Aplicar a todos los botones
+        const buttons = document.querySelectorAll('.btn-si-flood');
+        buttons.forEach(btn => {
+            btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            btn.style.transition = 'transform 0.2s ease-out';
+        });
+    }, true);
 }
-
-// Configurar giroscopio después de crear los botones
-setTimeout(() => {
-    setupGyroscope();
-}, 2000);
 
 btnNo.addEventListener("click", activarNo);
 btnNo.addEventListener("touchstart", (e) => {

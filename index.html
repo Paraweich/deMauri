@@ -163,21 +163,21 @@
         color: white;
         z-index: 500;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        animation: riseAndFall 3s ease-out forwards;
+        animation: fireworkExplosion 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
-    @keyframes riseAndFall {
+    @keyframes fireworkExplosion {
         0% {
-            transform: translateY(500px);
+            transform: translate(0, 0) scale(0.5);
             opacity: 0;
         }
-        15% {
+        5% {
             opacity: 1;
         }
-        40% {
-            transform: translateY(-50px);
+        30% {
+            transform: translate(var(--explode-x), var(--explode-y)) scale(1);
         }
         100% {
-            transform: translateY(var(--fall-distance));
+            transform: translate(var(--final-x), var(--final-y)) scale(1) rotate(var(--rotate));
             opacity: 1;
         }
     }
@@ -318,9 +318,10 @@ function activarNo() {
     btnSi.style.transform = `scale(${escalaSi})`;
 
     if (contadorNo === 5) {
-        escalaNo = 0.05;
-        btnNo.style.transform = `scale(${escalaNo})`;
-        btnNo.style.transition = 'transform 0.3s ease, left 0.15s linear, top 0.15s linear';
+        // Hacer desaparecer completamente el botón No
+        btnNo.style.opacity = '0';
+        btnNo.style.pointerEvents = 'none';
+        btnNo.style.transition = 'opacity 0.5s ease';
     } else {
         escalaNo = Math.max(0.3, escalaNo * 0.80);
         btnNo.style.transform = `scale(${escalaNo})`;
@@ -350,13 +351,16 @@ function activarNo() {
         setTimeout(() => {
             const card = document.querySelector('.card');
             const cardRect = card.getBoundingClientRect();
+            const btnContainer = document.querySelector('.btn-container');
+            const btnContainerRect = btnContainer.getBoundingClientRect();
+            
+            // Punto de origen (donde estaba el botón Sí)
+            const centerX = btnContainerRect.left - cardRect.left + (btnContainerRect.width / 4);
+            const centerY = btnContainerRect.top - cardRect.top + (btnContainerRect.height / 2);
             
             const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081', '#d81b60'];
             
-            // Array para trackear posiciones ocupadas en la base
-            let posicionesOcupadas = [];
-            
-            // Crear muchos botones Sí que suben y luego caen
+            // Crear botones que explotan como fuegos artificiales
             for (let i = 0; i < 120; i++) {
                 setTimeout(() => {
                     const btnFlood = document.createElement('button');
@@ -365,28 +369,39 @@ function activarNo() {
                     
                     btnFlood.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
                     
-                    // Posición aleatoria en X dentro de la tarjeta
-                    const randomX = Math.random() * (cardRect.width - 80);
-                    btnFlood.style.left = randomX + 'px';
+                    // Posición inicial en el centro
+                    btnFlood.style.left = centerX + 'px';
+                    btnFlood.style.top = centerY + 'px';
                     
-                    // Calcular donde va a caer (en la base de la tarjeta)
-                    // La base está a la altura del cardRect.height
-                    // Queremos que se apilen, así que calculamos capas
-                    const btnHeight = 35; // altura aproximada de cada botón
-                    const capa = Math.floor(posicionesOcupadas.length / 10); // 10 botones por capa
-                    const fallDistance = cardRect.height - 150 - (capa * btnHeight);
+                    // Ángulo aleatorio para la explosión (360 grados)
+                    const angle = (Math.random() * 360) * (Math.PI / 180);
+                    // Distancia de explosión aleatoria
+                    const explodeDistance = 100 + Math.random() * 150;
                     
-                    btnFlood.style.setProperty('--fall-distance', `${fallDistance}px`);
+                    // Calcular posición de explosión
+                    const explodeX = Math.cos(angle) * explodeDistance;
+                    const explodeY = Math.sin(angle) * explodeDistance;
+                    
+                    // Posición final (caída hacia la base)
+                    const finalX = explodeX + (Math.random() - 0.5) * 50;
+                    const finalY = cardRect.height - centerY - 80 + (Math.random() * 30);
+                    
+                    // Rotación aleatoria
+                    const rotation = Math.random() * 720 - 360;
+                    
+                    btnFlood.style.setProperty('--explode-x', `${explodeX}px`);
+                    btnFlood.style.setProperty('--explode-y', `${explodeY}px`);
+                    btnFlood.style.setProperty('--final-x', `${finalX}px`);
+                    btnFlood.style.setProperty('--final-y', `${finalY}px`);
+                    btnFlood.style.setProperty('--rotate', `${rotation}deg`);
                     
                     // Variación en el delay para efecto escalonado
-                    btnFlood.style.animationDelay = (i * 0.02) + 's';
+                    btnFlood.style.animationDelay = (i * 0.01) + 's';
                     
                     // Variación en la duración
-                    btnFlood.style.animationDuration = (Math.random() * 0.5 + 2.5) + 's';
+                    btnFlood.style.animationDuration = (Math.random() * 0.5 + 2) + 's';
                     
-                    posicionesOcupadas.push(randomX);
-                    
-                    // Al hacer clic en cualquier botón Sí de la inundación
+                    // Al hacer clic en cualquier botón Sí de la explosión
                     btnFlood.addEventListener('click', () => {
                         if (moveInterval) clearInterval(moveInterval);
                         lanzarConfetti();
@@ -404,7 +419,7 @@ function activarNo() {
                     });
                     
                     card.appendChild(btnFlood);
-                }, i * 15); // Crear botones escalonados
+                }, i * 8); // Crear botones más rápido para efecto más dramático
             }
         }, 300);
     }

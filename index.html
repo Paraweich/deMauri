@@ -167,11 +167,12 @@
     }
     @keyframes fireworkExplosion {
         0% {
-            transform: translate(0, 0) scale(0.5);
+            transform: translate(0, 0) scale(0.1);
             opacity: 0;
         }
-        5% {
+        3% {
             opacity: 1;
+            transform: translate(0, 0) scale(0.2);
         }
         30% {
             transform: translate(var(--explode-x), var(--explode-y)) scale(1);
@@ -361,7 +362,7 @@ function activarNo() {
             const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081', '#d81b60'];
             
             // Crear botones que explotan como fuegos artificiales
-            for (let i = 0; i < 120; i++) {
+            for (let i = 0; i < 350; i++) {
                 setTimeout(() => {
                     const btnFlood = document.createElement('button');
                     btnFlood.className = 'btn-si-flood';
@@ -375,16 +376,16 @@ function activarNo() {
                     
                     // Ángulo aleatorio para la explosión (360 grados)
                     const angle = (Math.random() * 360) * (Math.PI / 180);
-                    // Distancia de explosión aleatoria
-                    const explodeDistance = 100 + Math.random() * 150;
+                    // Distancia de explosión aleatoria - AUMENTADA PARA TODA LA PANTALLA
+                    const explodeDistance = 250 + Math.random() * 450;
                     
                     // Calcular posición de explosión
                     const explodeX = Math.cos(angle) * explodeDistance;
                     const explodeY = Math.sin(angle) * explodeDistance;
                     
-                    // Posición final (caída hacia la base)
-                    const finalX = explodeX + (Math.random() - 0.5) * 50;
-                    const finalY = cardRect.height - centerY - 80 + (Math.random() * 30);
+                    // Posición final (caída hacia la base) - MEJOR ACUMULACIÓN
+                    const finalX = explodeX * 0.5 + (Math.random() - 0.5) * 40;
+                    const finalY = cardRect.height - centerY - 60 + (Math.random() * 20);
                     
                     // Rotación aleatoria
                     const rotation = Math.random() * 720 - 360;
@@ -396,10 +397,10 @@ function activarNo() {
                     btnFlood.style.setProperty('--rotate', `${rotation}deg`);
                     
                     // Variación en el delay para efecto escalonado
-                    btnFlood.style.animationDelay = (i * 0.01) + 's';
+                    btnFlood.style.animationDelay = (i * 0.006) + 's';
                     
                     // Variación en la duración
-                    btnFlood.style.animationDuration = (Math.random() * 0.5 + 2) + 's';
+                    btnFlood.style.animationDuration = (Math.random() * 0.6 + 2.2) + 's';
                     
                     // Al hacer clic en cualquier botón Sí de la explosión
                     btnFlood.addEventListener('click', () => {
@@ -419,7 +420,7 @@ function activarNo() {
                     });
                     
                     card.appendChild(btnFlood);
-                }, i * 8); // Crear botones más rápido para efecto más dramático
+                }, i * 5); // Crear botones muy rápido para explosión masiva
             }
         }, 300);
     }

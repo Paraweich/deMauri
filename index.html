@@ -163,24 +163,33 @@
         color: white;
         z-index: 500;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        animation: fireworkExplosion 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        will-change: transform, opacity;
+        animation: fireworkExplosion 2.5s ease-out forwards;
     }
     @keyframes fireworkExplosion {
-        0% {
-            transform: translate(0, 0) scale(0.1);
-            opacity: 0;
-        }
-        3% {
-            opacity: 1;
-            transform: translate(0, 0) scale(0.2);
-        }
-        30% {
-            transform: translate(var(--explode-x), var(--explode-y)) scale(1);
-        }
-        100% {
-            transform: translate(var(--final-x), var(--final-y)) scale(1) rotate(var(--rotate));
-            opacity: 1;
-        }
+        0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 0; }
+        2% { opacity: 1; transform: translate(calc(var(--explode-x) * 0.03), calc(var(--explode-y) * 0.03)) scale(0.4) rotate(15deg); }
+        5% { transform: translate(calc(var(--explode-x) * 0.08), calc(var(--explode-y) * 0.1)) scale(0.6) rotate(35deg); }
+        8% { transform: translate(calc(var(--explode-x) * 0.15), calc(var(--explode-y) * 0.2)) scale(0.8) rotate(60deg); }
+        12% { transform: translate(calc(var(--explode-x) * 0.23), calc(var(--explode-y) * 0.32 - 10px)) scale(0.95) rotate(95deg); }
+        16% { transform: translate(calc(var(--explode-x) * 0.33), calc(var(--explode-y) * 0.45 - 18px)) scale(1) rotate(135deg); }
+        20% { transform: translate(calc(var(--explode-x) * 0.43), calc(var(--explode-y) * 0.56 - 23px)) scale(1) rotate(180deg); }
+        25% { transform: translate(calc(var(--explode-x) * 0.55), calc(var(--explode-y) * 0.64 - 28px)) scale(1) rotate(235deg); }
+        30% { transform: translate(calc(var(--explode-x) * 0.67), calc(var(--explode-y) * 0.7 - 31px)) scale(1) rotate(295deg); }
+        35% { transform: translate(calc(var(--explode-x) * 0.77), calc(var(--explode-y) * 0.72 - 32px)) scale(1) rotate(360deg); }
+        40% { transform: translate(calc(var(--explode-x) * 0.86), calc(var(--explode-y) * 0.7 - 30px)) scale(1) rotate(430deg); }
+        45% { transform: translate(calc(var(--explode-x) * 0.93), calc(var(--explode-y) * 0.64 - 25px)) scale(1) rotate(505deg); }
+        50% { transform: translate(calc(var(--explode-x) * 0.97), calc(var(--explode-y) * 0.54 - 18px)) scale(1) rotate(580deg); }
+        55% { transform: translate(calc(var(--explode-x) * 0.99), calc(var(--explode-y) * 0.4 - 8px)) scale(1) rotate(655deg); }
+        60% { transform: translate(calc(var(--explode-x) * 1), calc(var(--explode-y) * 0.23 + 5px)) scale(1) rotate(730deg); }
+        65% { transform: translate(calc(var(--explode-x) * 0.99), calc(var(--explode-y) * 0.05 + 20px)) scale(1) rotate(805deg); }
+        70% { transform: translate(calc(var(--explode-x) * 0.96), calc(var(--explode-y) * -0.15 + 38px)) scale(1) rotate(880deg); }
+        75% { transform: translate(calc(var(--final-x) * 0.5), calc(var(--final-y) * 0.35)) scale(1) rotate(955deg); }
+        80% { transform: translate(calc(var(--final-x) * 0.7), calc(var(--final-y) * 0.55)) scale(1) rotate(1030deg); }
+        85% { transform: translate(calc(var(--final-x) * 0.85), calc(var(--final-y) * 0.73)) scale(1) rotate(1105deg); }
+        90% { transform: translate(calc(var(--final-x) * 0.94), calc(var(--final-y) * 0.87)) scale(1) rotate(1180deg); }
+        95% { transform: translate(calc(var(--final-x) * 0.98), calc(var(--final-y) * 0.96)) scale(1) rotate(1255deg); }
+        100% { transform: translate(var(--final-x), var(--final-y)) scale(1) rotate(var(--rotate)); opacity: 1; }
     }
 </style>
 </head>
@@ -353,17 +362,11 @@ function activarNo() {
         setTimeout(() => {
             const card = document.querySelector('.card');
             const cardRect = card.getBoundingClientRect();
-            const btnContainer = document.querySelector('.btn-container');
-            const btnContainerRect = btnContainer.getBoundingClientRect();
-            
-            // Punto de origen inicial (donde estaba el botón Sí)
-            const initialCenterX = btnContainerRect.left - cardRect.left + (btnContainerRect.width / 4);
-            const centerY = btnContainerRect.top - cardRect.top + (btnContainerRect.height / 2);
             
             const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081', '#d81b60'];
             
-            // Crear botones que explotan como fuegos artificiales
-            for (let i = 0; i < 350; i++) {
+            // Crear botones que explotan desde puntos aleatorios
+            for (let i = 0; i < 200; i++) {
                 setTimeout(() => {
                     const btnFlood = document.createElement('button');
                     btnFlood.className = 'btn-si-flood';
@@ -371,30 +374,34 @@ function activarNo() {
                     
                     btnFlood.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
                     
-                    // MOVER EL PUNTO DE ORIGEN de izquierda a derecha
-                    const progress = i / 350; // Progreso de 0 a 1
-                    const movementRange = cardRect.width - 100; // Rango de movimiento
-                    const centerX = 50 + (progress * movementRange); // Se mueve de izquierda a derecha
+                    // ORIGEN ALEATORIO dentro de la tarjeta - ampliado al máximo para cubrir toda la izquierda
+                    const randomOriginX = 5 + Math.random() * (cardRect.width - 10);
+                    const randomOriginY = 10 + Math.random() * (cardRect.height - 80);
                     
-                    // Posición inicial en el centro móvil
-                    btnFlood.style.left = centerX + 'px';
-                    btnFlood.style.top = centerY + 'px';
+                    // Posición inicial aleatoria
+                    btnFlood.style.left = randomOriginX + 'px';
+                    btnFlood.style.top = randomOriginY + 'px';
                     
-                    // Ángulo aleatorio para la explosión (360 grados)
-                    const angle = (Math.random() * 360) * (Math.PI / 180);
-                    // Distancia de explosión aleatoria - AUMENTADA PARA TODA LA PANTALLA
-                    const explodeDistance = 250 + Math.random() * 450;
+                    // Decidir dirección: mitad izquierda, mitad derecha
+                    const direccion = i < 100 ? -1 : 1; // Primera mitad izquierda, segunda mitad derecha
                     
-                    // Calcular posición de explosión
+                    // Ángulo aleatorio para el lanzamiento inicial hacia el lado correspondiente
+                    const baseAngle = direccion === -1 ? 180 : 0; // 180° para izquierda, 0° para derecha
+                    const angle = (baseAngle + (Math.random() * 90 - 45)) * (Math.PI / 180);
+                    
+                    // Distancia de explosión aleatoria - aumentada para mejor cobertura
+                    const explodeDistance = 120 + Math.random() * 250;
+                    
+                    // Calcular posición de explosión (lanzamiento inicial)
                     const explodeX = Math.cos(angle) * explodeDistance;
-                    const explodeY = Math.sin(angle) * explodeDistance;
+                    const explodeY = -Math.abs(Math.sin(angle) * explodeDistance * 0.5); // Forzar hacia arriba
                     
-                    // Posición final (caída hacia la base) - MEJOR ACUMULACIÓN
-                    const finalX = explodeX * 0.5 + (Math.random() - 0.5) * 40;
-                    const finalY = cardRect.height - centerY - 60 + (Math.random() * 20);
+                    // Posición final (caída por gravedad hacia la base) - máxima distribución
+                    const finalX = explodeX * 0.8 + (Math.random() - 0.5) * 80;
+                    const finalY = cardRect.height - randomOriginY - 40 + (Math.random() * 35);
                     
-                    // Rotación aleatoria
-                    const rotation = Math.random() * 720 - 360;
+                    // Rotación aleatoria final - más amplia y fluida
+                    const rotation = Math.random() * 1440 - 720; // De -720 a 720 grados
                     
                     btnFlood.style.setProperty('--explode-x', `${explodeX}px`);
                     btnFlood.style.setProperty('--explode-y', `${explodeY}px`);
@@ -403,10 +410,10 @@ function activarNo() {
                     btnFlood.style.setProperty('--rotate', `${rotation}deg`);
                     
                     // Variación en el delay para efecto escalonado
-                    btnFlood.style.animationDelay = (i * 0.006) + 's';
+                    btnFlood.style.animationDelay = (i * 0.003) + 's';
                     
-                    // Variación en la duración
-                    btnFlood.style.animationDuration = (Math.random() * 0.6 + 2.2) + 's';
+                    // Variación en la duración para simular diferentes pesos/inercias
+                    btnFlood.style.animationDuration = (Math.random() * 0.6 + 1.8) + 's';
                     
                     // Al hacer clic en cualquier botón Sí de la explosión
                     btnFlood.addEventListener('click', () => {
@@ -488,6 +495,74 @@ btnSi.addEventListener("click", () => {
         </style>
     `;
 });
+
+// Variables para el giroscopio
+let gyroEnabled = false;
+let tiltX = 0;
+let tiltY = 0;
+
+// Detectar cuando las animaciones terminan para activar el giroscopio
+setTimeout(() => {
+    // Activar giroscopio después de que los botones hayan caído
+    if (window.DeviceOrientationEvent) {
+        // Pedir permiso en iOS 13+
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+                .then(permissionState => {
+                    if (permissionState === 'granted') {
+                        enableGyroscope();
+                    }
+                })
+                .catch(console.error);
+        } else {
+            // Para Android y navegadores que no requieren permiso
+            enableGyroscope();
+        }
+    }
+}, 4000); // Esperar 4 segundos (tiempo para que caigan los botones)
+
+function enableGyroscope() {
+    gyroEnabled = true;
+    window.addEventListener('deviceorientation', handleOrientation);
+}
+
+function handleOrientation(event) {
+    if (!gyroEnabled) return;
+    
+    // Obtener la inclinación del dispositivo
+    // beta: inclinación adelante-atrás (-180 a 180)
+    // gamma: inclinación izquierda-derecha (-90 a 90)
+    const beta = event.beta || 0;
+    const gamma = event.gamma || 0;
+    
+    // Convertir a valores de desplazamiento más manejables
+    tiltX = gamma / 90; // Normalizar entre -1 y 1
+    tiltY = beta / 180; // Normalizar entre -1 y 1
+    
+    // Aplicar el movimiento a todos los botones que ya cayeron
+    const allButtons = document.querySelectorAll('.btn-si-flood');
+    allButtons.forEach(btn => {
+        // Verificar si la animación ya terminó
+        const computedStyle = window.getComputedStyle(btn);
+        const animationState = computedStyle.animationPlayState;
+        
+        if (animationState === 'running') return; // Si aún está animando, no aplicar gyro
+        
+        // Obtener posición actual del botón
+        const currentTransform = computedStyle.transform;
+        const matrix = new DOMMatrix(currentTransform);
+        
+        // Calcular nuevo desplazamiento basado en la inclinación
+        const maxMove = 30; // Máximo de píxeles que se puede mover
+        const moveX = tiltX * maxMove;
+        const moveY = tiltY * maxMove;
+        
+        // Aplicar transformación con el desplazamiento por giroscopio
+        btn.style.transform = `translate(${matrix.m41 + moveX}px, ${matrix.m42 + moveY}px) scale(1) rotate(${matrix.m11}deg)`;
+        btn.style.transition = 'transform 0.1s ease-out';
+    });
+}
+
 </script>
 </body>
 </html>

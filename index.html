@@ -357,15 +357,14 @@ function activarNo() {
 
     // 5ta oprimida: explosión del botón Sí + lluvia de botones Sí que caen
     if (contadorNo === 5) {
-        // Esperar 4 segundos adicionales antes de hacer desaparecer el botón Sí
-        setTimeout(() => {
-            // Hacer desaparecer completamente el botón Sí original con efecto de explosión
-            btnSi.style.transform = `scale(0)`;
-            btnSi.style.opacity = '0';
-            btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-            btnSi.style.pointerEvents = 'none';
+        // Hacer desaparecer completamente el botón Sí original INMEDIATAMENTE
+        btnSi.style.transform = `scale(0)`;
+        btnSi.style.opacity = '0';
+        btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        btnSi.style.pointerEvents = 'none';
 
-            setTimeout(() => {
+        // Esperar solo un momento antes de iniciar la explosión de botones
+        setTimeout(() => {
             const card = document.querySelector('.card');
             const cardRect = card.getBoundingClientRect();
             
@@ -442,7 +441,6 @@ function activarNo() {
                 }, i * 5); // Crear botones muy rápido para explosión masiva
             }
         }, 300);
-        }, 4000); // Esperar 4 segundos adicionales antes de la explosión
     }
     
     if (contadorNo === 6) {

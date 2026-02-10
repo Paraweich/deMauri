@@ -215,7 +215,7 @@
         </div>
         <div class="btn-container">
             <button id="btnConfirmar" style="background-color: #f06292; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Confirmar Cita</button>
-            <button id="btnMejorNo" style="background-color: #90a4ae; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">¡Mejor no!</button>
+            <button id="btnMejorNo" style="background-color: #90a4ae; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">¡Iu mejor no!</button>
         </div>
     </div>
 </div>
@@ -246,6 +246,9 @@
                 <img src="https://i.ibb.co/HfgcTF2h/ezgif-com-animated-gif-maker-2.gif" alt="Gif triste 2" style="border-radius: 15px; width: 200px; height: 200px; object-fit: cover;">
             </div>
         </div>
+        <div class="btn-container">
+            <button id="btnVolver" style="background-color: #f06292; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Volver al inicio</button>
+        </div>
     </div>
 </div>
 
@@ -258,6 +261,7 @@ const textoNo = document.getElementById('textoNo');
 const imgGif = document.getElementById('imgGif');
 const btnConfirmar = document.getElementById('btnConfirmar');
 const btnMejorNo = document.getElementById('btnMejorNo');
+const btnVolver = document.getElementById('btnVolver');
 const heartRain = document.getElementById('heartRain');
 
 // Función para reproducir sonidos
@@ -369,6 +373,37 @@ function mostrarDetallesCita() {
 function mostrarGifTriste() {
     reproducirSonido('no');
     cambiarPantalla(4);
+}
+
+function volverAlInicio() {
+    reproducirSonido('si');
+    // Resetear todas las variables
+    contadorNo = 0;
+    escalaSi = 1;
+    escalaNo = 1;
+    primeraVez = true;
+    isMovingMode = false;
+    if (moveInterval) clearInterval(moveInterval);
+    
+    // Resetear estilos de botones
+    btnSi.style.transform = 'scale(1)';
+    btnSi.style.opacity = '1';
+    btnSi.style.pointerEvents = 'auto';
+    btnNo.style.opacity = '1';
+    btnNo.style.pointerEvents = 'auto';
+    btnNo.style.position = 'relative';
+    btnNo.style.left = '0';
+    btnNo.style.top = '0';
+    btnNo.style.transform = 'scale(1)';
+    btnNo.classList.remove('moving');
+    
+    // Resetear gif y texto
+    imgGif.src = "https://i.ibb.co/Gfkxj1m4/Grabacindepantalla2026-02-08212818-ezgif-com-video-to-gif-converter.gif";
+    textoNo.style.display = 'none';
+    textoNo.innerHTML = '';
+    
+    // Volver a pantalla 1
+    cambiarPantalla(1);
 }
 
 function shakeCard() {
@@ -522,6 +557,7 @@ btnSi.addEventListener('click', mostrarInvitacion);
 btnNo.addEventListener('click', activarNo);
 btnConfirmar.addEventListener('click', mostrarDetallesCita);
 btnMejorNo.addEventListener('click', mostrarGifTriste);
+btnVolver.addEventListener('click', volverAlInicio);
 
 });
 </script>

@@ -212,10 +212,10 @@
     <div class="card">
         <div class="card-content">
             <h1 style="color: #c2185b; font-size: 32px;">¡Estás invitada a una cita especial! 💕</h1>
-            <p style="color: #d81b60; font-size: 18px; margin: 20px 0;">Te espero en un lugar muy especial...</p>
         </div>
         <div class="btn-container">
             <button id="btnConfirmar" style="background-color: #f06292; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Confirmar Cita</button>
+            <button id="btnMejorNo" style="background-color: #90a4ae; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">¡Mejor no!</button>
         </div>
     </div>
 </div>
@@ -236,6 +236,19 @@
     </div>
 </div>
 
+<!-- PANTALLA 4: Se arrepintió -->
+<div class="pantalla" id="pantalla4">
+    <div class="card card-grande">
+        <div class="card-content">
+            <h1 style="color: #c2185b; font-size: 32px; margin-bottom: 30px;">¿Que haces hoputa? 😭</h1>
+            <div style="display: flex; justify-content: center; gap: 30px; align-items: center;">
+                <img src="https://i.ibb.co/kgxBjRMj/ezgif-com-animated-gif-maker-1.gif" alt="Gif triste 1" style="border-radius: 15px; width: 200px; height: 200px; object-fit: cover;">
+                <img src="https://i.ibb.co/HfgcTF2h/ezgif-com-animated-gif-maker-2.gif" alt="Gif triste 2" style="border-radius: 15px; width: 200px; height: 200px; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -244,6 +257,7 @@ const btnNo = document.getElementById('btnNo');
 const textoNo = document.getElementById('textoNo');
 const imgGif = document.getElementById('imgGif');
 const btnConfirmar = document.getElementById('btnConfirmar');
+const btnMejorNo = document.getElementById('btnMejorNo');
 const heartRain = document.getElementById('heartRain');
 
 // Función para reproducir sonidos
@@ -352,6 +366,11 @@ function mostrarDetallesCita() {
     cambiarPantalla(3);
 }
 
+function mostrarGifTriste() {
+    reproducirSonido('no');
+    cambiarPantalla(4);
+}
+
 function shakeCard() {
     const cardContent = document.querySelector(".card-content");
     cardContent.classList.add('shake');
@@ -374,7 +393,7 @@ function activarNo() {
         textoNo.innerHTML = "¡YA BASTA POR FAVOR! 😭💔";
     } else if (contadorNo >= 3) {
         textoNo.innerHTML = "¡YA BASTA! 💔 ¡AHORA TENÉS QUE ATRAPARME! 🔥";
-        imgGif.src = "https://i.ibb.co/C5dZstcx/Grabacindepantalla2026-02-08212636-ezgif-com-video-to-gif-converter.gif";
+        imgGif.src = "https://i.ibb.co/0LT5Mcb/ezgif-com-animated-gif-maker.gif";
         if (!isMovingMode) activarModoMovimientoLibre();
     } else if (contadorNo >= 2) {
         textoNo.innerHTML = "¿POR QUÉ DECIS NO TODAVIA? 😭💔";
@@ -502,6 +521,7 @@ function activarModoMovimientoLibre() {
 btnSi.addEventListener('click', mostrarInvitacion);
 btnNo.addEventListener('click', activarNo);
 btnConfirmar.addEventListener('click', mostrarDetallesCita);
+btnMejorNo.addEventListener('click', mostrarGifTriste);
 
 });
 </script>

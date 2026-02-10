@@ -225,12 +225,42 @@
 </head>
 <body>
 <div class="heart-rain" id="heartRain"></div>
-<audio id="musicaFondo" loop style="display: none;">
-    <source src="https://anonfilesnew.com/s/AoK3sURAGSW" type="audio/mpeg">
-</audio>
+
+<!-- PANTALLA 0: Login -->
+<div class="pantalla activa" id="pantalla0">
+    <div class="card">
+        <div class="card-content">
+            <h1 style="color: #c2185b; font-size: 28px; margin-bottom: 20px;">🔐 Acceso Exclusivo</h1>
+            <p style="color: #d81b60; font-size: 16px; margin: 20px 0;">
+                Solo personas autorizadas
+            </p>
+            <input 
+                id="inputNombre" 
+                type="text" 
+                placeholder="Ingresa tu nombre completo"
+                style="
+                    width: 100%;
+                    padding: 12px 15px;
+                    font-size: 16px;
+                    border: 2px solid #f06292;
+                    border-radius: 10px;
+                    font-family: 'Poppins', sans-serif;
+                    box-sizing: border-box;
+                    margin: 20px 0;
+                    transition: all 0.3s ease;
+                "
+                onkeypress="if(event.key==='Enter') validarAcceso()"
+            />
+            <p id="mensajeError" style="color: #e91e63; font-size: 14px; display: none; font-weight: bold;"></p>
+        </div>
+        <div class="btn-container">
+            <button id="btnEntrar" style="background-color: #f06292; color: white; padding: 14px 35px; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Entrar</button>
+        </div>
+    </div>
+</div>
 
 <!-- PANTALLA 1: Inicial -->
-<div class="pantalla activa" id="pantalla1">
+<div class="pantalla" id="pantalla1">
     <div class="card">
         <div class="card-content">
             <h1>¿Quieres ser mi San Valentín? ❤️</h1>
@@ -303,7 +333,9 @@ const btnConfirmar = document.getElementById('btnConfirmar');
 const btnMejorNo = document.getElementById('btnMejorNo');
 const btnVolver = document.getElementById('btnVolver');
 const btnVolverPantalla3 = document.getElementById('btnVolverPantalla3');
-const musicaFondo = document.getElementById('musicaFondo');
+const btnEntrar = document.getElementById('btnEntrar');
+const inputNombre = document.getElementById('inputNombre');
+const mensajeError = document.getElementById('mensajeError');
 const heartRain = document.getElementById('heartRain');
 
 // Función para reproducir sonidos
@@ -361,7 +393,6 @@ function reproducirSonido(tipo) {
 
 
 let escalaSi = 1;
-let escalaNo = 1;
 let primeraVez = true;
 let contadorNo = 0;
 let isMovingMode = false;
@@ -397,6 +428,24 @@ for (let i = 0; i < 50; i++) {
     createHeart();
 }
 
+function validarAcceso() {
+    const nombreIngresado = inputNombre.value.trim().toLowerCase();
+    const nombreCorrecto = "andrea carolina velazquez baez".toLowerCase();
+    
+    if (nombreIngresado === nombreCorrecto) {
+        mensajeError.style.display = 'none';
+        reproducirSonido('si');
+        cambiarPantalla(1);
+        inputNombre.value = '';
+    } else {
+        reproducirSonido('no');
+        mensajeError.style.display = 'block';
+        mensajeError.innerHTML = '❌ Nombre incorrecto. Solo personas autorizadas.';
+        inputNombre.value = '';
+        inputNombre.focus();
+    }
+}
+
 function cambiarPantalla(num) {
     document.querySelectorAll('.pantalla').forEach(p => {
         p.classList.remove('activa');
@@ -408,15 +457,6 @@ function cambiarPantalla(num) {
     // Agregar zoom solo a pantalla 3
     if (num === 3) {
         pantalla.classList.add('zoom-in');
-    }
-    
-    // Reproducir música en pantalla 3
-    if (num === 3) {
-        musicaFondo.volume = 0.5;
-        musicaFondo.play().catch(e => console.log('No se pudo reproducir la música'));
-    } else {
-        musicaFondo.pause();
-        musicaFondo.currentTime = 0;
     }
 }
 
@@ -440,7 +480,6 @@ function volverAlInicio() {
     // Resetear todas las variables
     contadorNo = 0;
     escalaSi = 1;
-    escalaNo = 1;
     primeraVez = true;
     isMovingMode = false;
     if (moveInterval) clearInterval(moveInterval);
@@ -466,8 +505,12 @@ function volverAlInicio() {
     textoNo.style.display = 'none';
     textoNo.innerHTML = '';
     
-    // Volver a pantalla 1
-    cambiarPantalla(1);
+    // Limpiar input de login
+    inputNombre.value = '';
+    mensajeError.style.display = 'none';
+    
+    // Volver a pantalla 0 (login)
+    cambiarPantalla(0);
 }
 
 function shakeCard() {
@@ -506,15 +549,15 @@ function activarNo() {
     imgGif.offsetHeight;
     imgGif.style.display = 'block';
 
-    escalaSi = escalaSi * 1.30;
+    escalaSi = Math.min(escalaSi * 1.25, 3.5);
     btnSi.style.transform = `scale(${escalaSi})`;
 
     if (contadorNo === 5) {
         btnNo.style.opacity = '0';
         btnNo.style.pointerEvents = 'none';
     } else {
-        escalaNo = Math.max(0.3, escalaNo * 0.80);
-        btnNo.style.transform = `scale(${escalaNo})`;
+        // El botón No mantiene su tamaño original
+        btnNo.style.transform = `scale(1)`;
     }
 
     if (primeraVez && contadorNo >= 1) {
@@ -617,6 +660,7 @@ function activarModoMovimientoLibre() {
 }
 
 // EVENT LISTENERS
+btnEntrar.addEventListener('click', validarAcceso);
 btnSi.addEventListener('click', mostrarInvitacion);
 btnNo.addEventListener('click', activarNo);
 btnConfirmar.addEventListener('click', mostrarDetallesCita);

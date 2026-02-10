@@ -168,27 +168,10 @@
     }
     @keyframes fireworkExplosion {
         0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 0; }
-        2% { opacity: 1; transform: translate(calc(var(--explode-x) * 0.03), calc(var(--explode-y) * 0.03)) scale(0.4) rotate(15deg); }
-        5% { transform: translate(calc(var(--explode-x) * 0.08), calc(var(--explode-y) * 0.1)) scale(0.6) rotate(35deg); }
-        8% { transform: translate(calc(var(--explode-x) * 0.15), calc(var(--explode-y) * 0.2)) scale(0.8) rotate(60deg); }
-        12% { transform: translate(calc(var(--explode-x) * 0.23), calc(var(--explode-y) * 0.32 - 10px)) scale(0.95) rotate(95deg); }
-        16% { transform: translate(calc(var(--explode-x) * 0.33), calc(var(--explode-y) * 0.45 - 18px)) scale(1) rotate(135deg); }
-        20% { transform: translate(calc(var(--explode-x) * 0.43), calc(var(--explode-y) * 0.56 - 23px)) scale(1) rotate(180deg); }
-        25% { transform: translate(calc(var(--explode-x) * 0.55), calc(var(--explode-y) * 0.64 - 28px)) scale(1) rotate(235deg); }
-        30% { transform: translate(calc(var(--explode-x) * 0.67), calc(var(--explode-y) * 0.7 - 31px)) scale(1) rotate(295deg); }
-        35% { transform: translate(calc(var(--explode-x) * 0.77), calc(var(--explode-y) * 0.72 - 32px)) scale(1) rotate(360deg); }
-        40% { transform: translate(calc(var(--explode-x) * 0.86), calc(var(--explode-y) * 0.7 - 30px)) scale(1) rotate(430deg); }
-        45% { transform: translate(calc(var(--explode-x) * 0.93), calc(var(--explode-y) * 0.64 - 25px)) scale(1) rotate(505deg); }
-        50% { transform: translate(calc(var(--explode-x) * 0.97), calc(var(--explode-y) * 0.54 - 18px)) scale(1) rotate(580deg); }
-        55% { transform: translate(calc(var(--explode-x) * 0.99), calc(var(--explode-y) * 0.4 - 8px)) scale(1) rotate(655deg); }
-        60% { transform: translate(calc(var(--explode-x) * 1), calc(var(--explode-y) * 0.23 + 5px)) scale(1) rotate(730deg); }
-        65% { transform: translate(calc(var(--explode-x) * 0.99), calc(var(--explode-y) * 0.05 + 20px)) scale(1) rotate(805deg); }
-        70% { transform: translate(calc(var(--explode-x) * 0.96), calc(var(--explode-y) * -0.15 + 38px)) scale(1) rotate(880deg); }
-        75% { transform: translate(calc(var(--final-x) * 0.5), calc(var(--final-y) * 0.35)) scale(1) rotate(955deg); }
-        80% { transform: translate(calc(var(--final-x) * 0.7), calc(var(--final-y) * 0.55)) scale(1) rotate(1030deg); }
-        85% { transform: translate(calc(var(--final-x) * 0.85), calc(var(--final-y) * 0.73)) scale(1) rotate(1105deg); }
-        90% { transform: translate(calc(var(--final-x) * 0.94), calc(var(--final-y) * 0.87)) scale(1) rotate(1180deg); }
-        95% { transform: translate(calc(var(--final-x) * 0.98), calc(var(--final-y) * 0.96)) scale(1) rotate(1255deg); }
+        20% { transform: translate(calc(var(--explode-x) * 0.2), calc(var(--explode-y) * 0.2)) scale(0.6) rotate(72deg); opacity: 1; }
+        40% { transform: translate(calc(var(--explode-x) * 0.5), calc(var(--explode-y) * 0.5)) scale(0.8) rotate(144deg); }
+        60% { transform: translate(calc(var(--explode-x) * 0.8), calc(var(--explode-y) * 0.8)) scale(1) rotate(216deg); }
+        80% { transform: translate(calc(var(--explode-x) * 1.1), calc(var(--explode-y) * 1.1)) scale(1.1) rotate(288deg); }
         100% { transform: translate(var(--final-x), var(--final-y)) scale(1) rotate(var(--rotate)); opacity: 1; }
     }
 </style>
@@ -202,7 +185,7 @@
       
         <img
             id="imgGif"
-            src="https://i.ibb.co/Gfkxj1m4/Grabacindepantalla2026-02-08212818-ezgif-com-video-to-gif-converter.gif"
+            src="https://i.ibb.co/Gfkxj1m/Grabacindepantalla2026-02-08212818-ezgif-com-video-to-gif-converter.gif"
             alt="Gif inicial"
         >
     </div>
@@ -256,30 +239,28 @@ function createHeart() {
     heart.style.animationDelay = Math.random() * 5 + "s";
     
     const randomOpacity = Math.random() * 0.4 + 0.4;
-    heart.style.setProperty('opacity', randomOpacity);
+    heart.style.opacity = randomOpacity;
     
     const randomSize = Math.random() * 15 + 15;
     heart.style.fontSize = randomSize + "px";
     
     heartRain.appendChild(heart);
     
-    const duration = parseFloat(heart.style.animationDuration) * 1000;
-    const delay = parseFloat(heart.style.animationDelay) * 1000;
+    const duration = parseFloat(heart.style.animationDuration) * 1000 + parseFloat(heart.style.animationDelay) * 1000;
     setTimeout(() => {
         heart.remove();
-        createHeart();
-    }, duration + delay);
+    }, duration);
+    setTimeout(createHeart, Math.random() * 2000); // Recrear con delay aleatorio para flujo continuo
 }
 
 for (let i = 0; i < 50; i++) {
-    createHeart();
+    setTimeout(createHeart, i * 100); // Iniciar escalonadamente
 }
 
 const btnNo = document.getElementById("btnNo");
 const btnSi = document.getElementById("btnSi");
 const textoNo = document.getElementById("textoNo");
 const imgGif = document.getElementById("imgGif");
-const container = document.body;
 const cardContent = document.querySelector(".card-content");
 
 let escalaSi = 1;
@@ -288,6 +269,8 @@ let primeraVez = true;
 let contadorNo = 0;
 let isMovingMode = false;
 let moveInterval = null;
+let gyroActive = false;
+let buttonsReady = false;
 
 function shakeCard() {
     cardContent.classList.add('shake');
@@ -296,19 +279,35 @@ function shakeCard() {
     }, 500);
 }
 
-function activarNo() {
+function createMiniSi(x, y) {
+    const miniSi = document.createElement('div');
+    miniSi.className = 'mini-si';
+    miniSi.textContent = '¡Sí!';
+    miniSi.style.left = `${x}px`;
+    miniSi.style.top = `${y}px`;
+    const tx = (Math.random() - 0.5) * 200;
+    const ty = (Math.random() - 0.5) * 200 - 100; // Ligeramente hacia arriba
+    miniSi.style.setProperty('--tx', `${tx}px`);
+    miniSi.style.setProperty('--ty', `${ty}px`);
+    document.body.appendChild(miniSi);
+    setTimeout(() => miniSi.remove(), 4000);
+}
+
+function activarNo(e) {
+    if (e) e.preventDefault();
     contadorNo++;
     textoNo.style.display = "block";
     
     shakeCard();
 
+    // Crear mini "Sí" volando desde el botón No
+    const rect = btnNo.getBoundingClientRect();
+    createMiniSi(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
     if (contadorNo >= 5) {
         imgGif.src = "https://i.ibb.co/bjp4FSRr/STK-20240720-WA0017.webp";
         textoNo.innerHTML = "Solo botón Sí disponible 💕";
-        // Hacer que el gif se quede visible por más tiempo
-        setTimeout(() => {
-            imgGif.style.opacity = '1';
-        }, 100);
+        imgGif.style.opacity = '1';
     } else if (contadorNo >= 4) {
         imgGif.src = "https://i.ibb.co/b560P9cq/Grabacin2026-02-08233029-ezgif-com-video-to-gif-converter.gif";
         textoNo.innerHTML = "¡YA BASTA POR FAVOR! 😭💔";
@@ -324,18 +323,34 @@ function activarNo() {
         imgGif.src = "https://i.ibb.co/C5dZstcx/Grabacindepantalla2026-02-08212636-ezgif-com-video-to-gif-converter.gif";
     }
 
-    imgGif.style.display = 'none';
-    imgGif.offsetHeight;
-    imgGif.style.display = 'block';
+    // Resetear animación de imagen
+    imgGif.style.opacity = '0';
+    imgGif.style.transition = 'opacity 0.3s';
+    setTimeout(() => {
+        imgGif.style.opacity = '1';
+    }, 10);
 
     escalaSi = escalaSi * 1.30;
     btnSi.style.transform = `scale(${escalaSi})`;
 
-    if (contadorNo === 5) {
+    if (contadorNo >= 5) {
         // Hacer desaparecer completamente el botón No
         btnNo.style.opacity = '0';
         btnNo.style.pointerEvents = 'none';
         btnNo.style.transition = 'opacity 0.5s ease';
+        if (moveInterval) clearInterval(moveInterval);
+
+        // Explosión del botón Sí
+        btnSi.style.transform = `scale(0)`;
+        btnSi.style.opacity = '0';
+        btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        btnSi.style.pointerEvents = 'none';
+
+        setTimeout(() => {
+            buttonsReady = true;
+            requestGyroPermission();
+            explotarBotonesSi();
+        }, 300);
     } else {
         escalaNo = Math.max(0.3, escalaNo * 0.80);
         btnNo.style.transform = `scale(${escalaNo})`;
@@ -354,97 +369,56 @@ function activarNo() {
         btnNo.style.left = `${x}px`;
         btnNo.style.top = `${y}px`;
     }
+}
 
-    // 5ta oprimida: explosión del botón Sí + lluvia de botones Sí que caen
-    if (contadorNo === 5) {
-        // Hacer desaparecer completamente el botón Sí original INMEDIATAMENTE
-        btnSi.style.transform = `scale(0)`;
-        btnSi.style.opacity = '0';
-        btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-        btnSi.style.pointerEvents = 'none';
-
-        // Esperar solo un momento antes de iniciar la explosión de botones
-        setTimeout(() => {
-            const card = document.querySelector('.card');
-            const cardRect = card.getBoundingClientRect();
-            
-            const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081', '#d81b60'];
-            
-            // Crear botones que explotan desde puntos aleatorios
-            for (let i = 0; i < 200; i++) {
-                setTimeout(() => {
-                    const btnFlood = document.createElement('button');
-                    btnFlood.className = 'btn-si-flood';
-                    btnFlood.textContent = '¡SÍ!';
-                    
-                    btnFlood.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
-                    
-                    // ORIGEN ALEATORIO dentro de la tarjeta - ampliado al máximo para cubrir toda la izquierda
-                    const randomOriginX = 5 + Math.random() * (cardRect.width - 10);
-                    const randomOriginY = 10 + Math.random() * (cardRect.height - 80);
-                    
-                    // Posición inicial aleatoria
-                    btnFlood.style.left = randomOriginX + 'px';
-                    btnFlood.style.top = randomOriginY + 'px';
-                    
-                    // Decidir dirección: mitad izquierda, mitad derecha
-                    const direccion = i < 100 ? -1 : 1; // Primera mitad izquierda, segunda mitad derecha
-                    
-                    // Ángulo aleatorio para el lanzamiento inicial hacia el lado correspondiente
-                    const baseAngle = direccion === -1 ? 180 : 0; // 180° para izquierda, 0° para derecha
-                    const angle = (baseAngle + (Math.random() * 90 - 45)) * (Math.PI / 180);
-                    
-                    // Distancia de explosión aleatoria - aumentada para mejor cobertura
-                    const explodeDistance = 120 + Math.random() * 250;
-                    
-                    // Calcular posición de explosión (lanzamiento inicial)
-                    const explodeX = Math.cos(angle) * explodeDistance;
-                    const explodeY = -Math.abs(Math.sin(angle) * explodeDistance * 0.5); // Forzar hacia arriba
-                    
-                    // Posición final (caída por gravedad hacia la base) - máxima distribución
-                    const finalX = explodeX * 0.8 + (Math.random() - 0.5) * 80;
-                    const finalY = cardRect.height - randomOriginY - 40 + (Math.random() * 35);
-                    
-                    // Rotación aleatoria final - más amplia y fluida
-                    const rotation = Math.random() * 1440 - 720; // De -720 a 720 grados
-                    
-                    btnFlood.style.setProperty('--explode-x', `${explodeX}px`);
-                    btnFlood.style.setProperty('--explode-y', `${explodeY}px`);
-                    btnFlood.style.setProperty('--final-x', `${finalX}px`);
-                    btnFlood.style.setProperty('--final-y', `${finalY}px`);
-                    btnFlood.style.setProperty('--rotate', `${rotation}deg`);
-                    
-                    // Variación en el delay para efecto escalonado
-                    btnFlood.style.animationDelay = (i * 0.003) + 's';
-                    
-                    // Variación en la duración para simular diferentes pesos/inercias
-                    btnFlood.style.animationDuration = (Math.random() * 0.6 + 1.8) + 's';
-                    
-                    // Al hacer clic en cualquier botón Sí de la explosión
-                    btnFlood.addEventListener('click', () => {
-                        if (moveInterval) clearInterval(moveInterval);
-                        lanzarConfetti();
-                        document.body.innerHTML = `
-                            <h1 style="color:#c2185b; text-align:center; margin-top:40vh; font-size:3em; text-shadow: 2px 2px 10px rgba(194,24,91,0.5); animation: pulse 1s ease-in-out infinite;">
-                                ¡SABÍA QUE DIRÍAS QUE SÍ! 😍❤️
-                            </h1>
-                            <style>
-                                @keyframes pulse {
-                                    0%, 100% { transform: scale(1); }
-                                    50% { transform: scale(1.05); }
-                                }
-                            </style>
-                        `;
-                    });
-                    
-                    card.appendChild(btnFlood);
-                }, i * 5); // Crear botones muy rápido para explosión masiva
-            }
-        }, 300);
-    }
+function explotarBotonesSi() {
+    const card = document.querySelector('.card');
+    const cardRect = card.getBoundingClientRect();
     
-    if (contadorNo === 6) {
-        textoNo.innerHTML = "¡Elegí cualquier SÍ! 💕";
+    const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081', '#d81b60'];
+    
+    // Reducir a 100 botones para mejor rendimiento
+    for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+            const btnFlood = document.createElement('button');
+            btnFlood.className = 'btn-si-flood';
+            btnFlood.textContent = '¡SÍ!';
+            
+            btnFlood.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+            
+            // Origen aleatorio dentro de la tarjeta
+            const randomOriginX = Math.random() * cardRect.width;
+            const randomOriginY = Math.random() * (cardRect.height - 50);
+            
+            btnFlood.style.left = randomOriginX + 'px';
+            btnFlood.style.top = randomOriginY + 'px';
+            
+            // Dirección aleatoria
+            const angle = Math.random() * 360 * (Math.PI / 180);
+            const explodeDistance = 100 + Math.random() * 200;
+            
+            const explodeX = Math.cos(angle) * explodeDistance;
+            const explodeY = Math.sin(angle) * explodeDistance;
+            
+            // Posición final con gravedad simulada
+            const finalX = explodeX * (0.5 + Math.random() * 0.5);
+            const finalY = cardRect.height - randomOriginY + explodeY * 0.3 + 20;
+            
+            const rotation = Math.random() * 720 - 360;
+            
+            btnFlood.style.setProperty('--explode-x', `${explodeX}px`);
+            btnFlood.style.setProperty('--explode-y', `${explodeY}px`);
+            btnFlood.style.setProperty('--final-x', `${finalX}px`);
+            btnFlood.style.setProperty('--final-y', `${finalY}px`);
+            btnFlood.style.setProperty('--rotate', `${rotation}deg`);
+            
+            btnFlood.style.animationDelay = (i * 0.01) + 's';
+            btnFlood.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+            
+            btnFlood.addEventListener('click', aceptarSi);
+            
+            card.appendChild(btnFlood);
+        }, i * 10);
     }
 }
 
@@ -454,7 +428,7 @@ function activarModoMovimientoLibre() {
     let dx = (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 150);
     let dy = (Math.random() > 0.5 ? 1 : -1) * (80 + Math.random() * 80);
     
-    let velocidadMultiplicador = contadorNo >= 5 ? 4.5 : 2.35;
+    let velocidadMultiplicador = 2.35;
     
     moveInterval = setInterval(() => {
         if (!isMovingMode) return;
@@ -462,36 +436,19 @@ function activarModoMovimientoLibre() {
         let currentTop = parseFloat(btnNo.style.top) || window.innerHeight / 2;
         currentLeft += dx * 0.016 * velocidadMultiplicador;
         currentTop += dy * 0.016 * velocidadMultiplicador;
-        if (currentLeft < 30 || currentLeft > window.innerWidth - btnNo.offsetWidth - 30) {
-            dx = -dx * (1.0 + Math.random() * 0.3);
-            dy += (Math.random() - 0.5) * 20;
-        }
-        if (currentTop < 30 || currentTop > window.innerHeight - btnNo.offsetHeight - 30) {
-            dy = -dy * (1.0 + Math.random() * 0.3);
-            dx += (Math.random() - 0.5) * 40;
-        }
+        if (currentLeft < 30 || currentLeft > window.innerWidth - btnNo.offsetWidth - 30) dx = -dx;
+        if (currentTop < 30 || currentTop > window.innerHeight - btnNo.offsetHeight - 30) dy = -dy;
         if (Math.random() < 0.06) {
             dx = (Math.random() > 0.5 ? 1 : -1) * (140 + Math.random() * 140);
             dy = (Math.random() > 0.5 ? 1 : -1) * (70 + Math.random() * 90);
         }
         btnNo.style.left = `${Math.max(30, Math.min(window.innerWidth - btnNo.offsetWidth - 30, currentLeft))}px`;
         btnNo.style.top = `${Math.max(30, Math.min(window.innerHeight - btnNo.offsetHeight - 30, currentTop))}px`;
-    }, 12);
+    }, 16); // Mejor frame rate
 }
-
-// Variables para el giroscopio
-let gyroActive = false;
-let buttonsReady = false;
-
-// Activar giroscopio automáticamente después de que los botones caigan
-setTimeout(() => {
-    buttonsReady = true;
-    requestGyroPermission();
-}, 5000); // 5 segundos después de presionar No por quinta vez
 
 function requestGyroPermission() {
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-        // iOS 13+ requiere permiso explícito
         const permitBtn = document.createElement('button');
         permitBtn.textContent = '📱 Toca para activar movimiento';
         permitBtn.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; padding:12px 24px; background:#f06292; color:white; border:none; border-radius:12px; font-size:16px; font-weight:bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);';
@@ -508,7 +465,6 @@ function requestGyroPermission() {
                 .catch(console.error);
         });
     } else {
-        // Android y otros navegadores
         startGyroscope();
     }
 }
@@ -519,31 +475,23 @@ function startGyroscope() {
     window.addEventListener('deviceorientation', (event) => {
         if (!gyroActive || !buttonsReady) return;
         
-        // Obtener orientación del dispositivo
-        const gamma = event.gamma || 0; // Izquierda-derecha (-90 a 90)
-        const beta = event.beta || 0;   // Adelante-atrás (-180 a 180)
+        const gamma = event.gamma || 0;
+        const beta = event.beta || 0;
         
-        // Calcular desplazamiento (invertido para que sea más intuitivo)
-        const moveX = (gamma / 90) * 50;
-        const moveY = (beta / 180) * 50;
+        const moveX = (gamma / 90) * 30; // Sensibilidad reducida
+        const moveY = (beta / 180) * 30;
         
-        // Aplicar a todos los botones
         const buttons = document.querySelectorAll('.btn-si-flood');
         buttons.forEach(btn => {
-            btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
-            btn.style.transition = 'transform 0.2s ease-out';
+            btn.style.transform = `translate(${moveX}px, ${moveY}px) rotate(var(--rotate))`;
+            btn.style.transition = 'transform 0.1s ease-out';
         });
-    }, true);
+    });
 }
 
-btnNo.addEventListener("click", activarNo);
-btnNo.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    activarNo();
-});
-
-btnSi.addEventListener("click", () => {
+function aceptarSi() {
     if (moveInterval) clearInterval(moveInterval);
+    gyroActive = false;
     lanzarConfetti();
     document.body.innerHTML = `
         <h1 style="color:#c2185b; text-align:center; margin-top:40vh; font-size:3em; text-shadow: 2px 2px 10px rgba(194,24,91,0.5); animation: pulse 1s ease-in-out infinite;">
@@ -556,6 +504,23 @@ btnSi.addEventListener("click", () => {
             }
         </style>
     `;
+}
+
+btnNo.addEventListener("click", activarNo);
+btnNo.addEventListener("touchstart", activarNo);
+
+btnSi.addEventListener("click", aceptarSi);
+btnSi.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    aceptarSi();
+});
+
+// Manejar resize para posiciones
+window.addEventListener('resize', () => {
+    if (isMovingMode) {
+        btnNo.style.left = Math.min(parseFloat(btnNo.style.left), window.innerWidth - btnNo.offsetWidth - 30) + 'px';
+        btnNo.style.top = Math.min(parseFloat(btnNo.style.top), window.innerHeight - btnNo.offsetHeight - 30) + 'px';
+    }
 });
 
 </script>

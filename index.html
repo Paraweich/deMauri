@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -363,7 +364,7 @@ function activarNo() {
         btnSi.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
         btnSi.style.pointerEvents = 'none';
 
-        // Esperar solo un momento antes de iniciar la explosión de botones
+        // Esperar más tiempo antes de iniciar la explosión de botones para que el GIF dure más
         setTimeout(() => {
             const card = document.querySelector('.card');
             const cardRect = card.getBoundingClientRect();
@@ -440,7 +441,7 @@ function activarNo() {
                     card.appendChild(btnFlood);
                 }, i * 5); // Crear botones muy rápido para explosión masiva
             }
-        }, 300);
+        }, 3000); // Aumentado a 3000ms (3 segundos) para que el GIF dure más
     }
     
     if (contadorNo === 6) {
@@ -504,3 +505,4 @@ btnSi.addEventListener("click", () => {
 </script>
 </body>
 </html>
+```

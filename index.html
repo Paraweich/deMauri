@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -225,16 +224,16 @@ function lanzarConfetti() {
 
     (function frame() {
         confetti({
-            particleCount: 5;
-            angle: 60;
-            spread: 55;
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
             origin: { x: 0 },
             colors: colores
         });
         confetti({
-            particleCount: 5;
-            angle: 120;
-            spread: 55;
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
             origin: { x: 1 },
             colors: colores
         });
@@ -480,63 +479,6 @@ function activarModoMovimientoLibre() {
     }, 12);
 }
 
-// Variables para el giroscopio
-let gyroActive = false;
-let buttonsReady = false;
-
-// Activar giroscopio automáticamente después de que los botones caigan
-setTimeout(() => {
-    buttonsReady = true;
-    requestGyroPermission();
-}, 5000); // 5 segundos después de presionar No por quinta vez
-
-function requestGyroPermission() {
-    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-        // iOS 13+ requiere permiso explícito
-        const permitBtn = document.createElement('button');
-        permitBtn.textContent = '📱 Toca para activar movimiento';
-        permitBtn.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; padding:12px 24px; background:#f06292; color:white; border:none; border-radius:12px; font-size:16px; font-weight:bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);';
-        document.body.appendChild(permitBtn);
-        
-        permitBtn.addEventListener('click', () => {
-            DeviceMotionEvent.requestPermission()
-                .then(response => {
-                    if (response === 'granted') {
-                        startGyroscope();
-                        permitBtn.remove();
-                    }
-                })
-                .catch(console.error);
-        });
-    } else {
-        // Android y otros navegadores
-        startGyroscope();
-    }
-}
-
-function startGyroscope() {
-    gyroActive = true;
-    
-    window.addEventListener('deviceorientation', (event) => {
-        if (!gyroActive || !buttonsReady) return;
-        
-        // Obtener orientación del dispositivo
-        const gamma = event.gamma || 0; // Izquierda-derecha (-90 a 90)
-        const beta = event.beta || 0;   // Adelante-atrás (-180 a 180)
-        
-        // Calcular desplazamiento (invertido para que sea más intuitivo)
-        const moveX = (gamma / 90) * 50;
-        const moveY = (beta / 180) * 50;
-        
-        // Aplicar a todos los botones
-        const buttons = document.querySelectorAll('.btn-si-flood');
-        buttons.forEach(btn => {
-            btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
-            btn.style.transition = 'transform 0.2s ease-out';
-        });
-    }, true);
-}
-
 btnNo.addEventListener("click", activarNo);
 btnNo.addEventListener("touchstart", (e) => {
     e.preventDefault();
@@ -562,4 +504,3 @@ btnSi.addEventListener("click", () => {
 </script>
 </body>
 </html>
-```

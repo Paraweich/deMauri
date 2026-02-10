@@ -428,9 +428,13 @@ for (let i = 0; i < 50; i++) {
     createHeart();
 }
 
+function normalizarTexto(texto) {
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
 function validarAcceso() {
-    const nombreIngresado = inputNombre.value.trim().toLowerCase();
-    const nombreCorrecto = "andrea carolina velazquez baez".toLowerCase();
+    const nombreIngresado = normalizarTexto(inputNombre.value);
+    const nombreCorrecto = normalizarTexto("andrea carolina velazquez baez");
     
     if (nombreIngresado === nombreCorrecto) {
         mensajeError.style.display = 'none';

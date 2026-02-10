@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>San Valentín</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
     body {
         margin: 0;
@@ -13,7 +13,7 @@
         justify-content: center;
         align-items: center;
         background: linear-gradient(135deg, #ffebee 0%, #ffcccb 40%, #ff80ab 70%, #e91e63 100%);
-        font-family: Arial, sans-serif;
+        font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
         overflow: hidden;
         position: relative;
     }
@@ -108,20 +108,41 @@
         border: none;
         border-radius: 12px;
         cursor: pointer;
-        transition: transform 0.4s ease, opacity 0.8s ease;
+        transition: transform 0.4s ease, opacity 0.8s ease, box-shadow 0.2s ease;
         position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+    }
+    button:active {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transform: translateY(1px);
     }
     #btnSi {
         background-color: #f06292;
         color: white;
+        padding: 14px 35px;
+        font-size: 18px;
+        box-shadow: 0 4px 15px rgba(240, 98, 146, 0.4);
+    }
+    #btnSi:hover {
+        box-shadow: 0 8px 25px rgba(240, 98, 146, 0.6);
     }
     #btnNo {
         background-color: #90a4ae;
         color: white;
         position: relative;
-        transition: left 0.5s ease-out, top 0.5s ease-out, transform 0.3s ease;
+        transition: left 0.5s ease-out, top 0.5s ease-out, transform 0.3s ease, box-shadow 0.2s ease;
         pointer-events: auto;
         z-index: 999;
+        padding: 14px 35px;
+        font-size: 18px;
+        box-shadow: 0 4px 15px rgba(144, 164, 174, 0.4);
+    }
+    #btnNo:hover {
+        box-shadow: 0 8px 25px rgba(144, 164, 174, 0.6);
     }
     #btnNo.moving {
         transition: left 0.25s linear, top 0.25s linear, transform 0.3s ease;
@@ -187,10 +208,26 @@
         display: flex !important;
         opacity: 1;
     }
+    .pantalla.activa.zoom-in {
+        animation: zoomIn 0.6s ease-out;
+    }
+    @keyframes zoomIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
 </style>
 </head>
 <body>
 <div class="heart-rain" id="heartRain"></div>
+<audio id="musicaFondo" loop style="display: none;">
+    <source src="https://drive.google.com/u/0/uc?id=1mwsvv3AlzueJNBlk4Nm_AerUZqtQcSaQ&export=download" type="audio/mpeg">
+</audio>
 
 <!-- PANTALLA 1: Inicial -->
 <div class="pantalla activa" id="pantalla1">
@@ -214,8 +251,8 @@
             <h1 style="color: #c2185b; font-size: 32px;">¡Estás invitada a una cita especial! 💕</h1>
         </div>
         <div class="btn-container">
-            <button id="btnConfirmar" style="background-color: #f06292; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Confirmar Cita</button>
-            <button id="btnMejorNo" style="background-color: #90a4ae; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">¡Iu mejor no!</button>
+            <button id="btnConfirmar" style="background-color: #f06292; color: white; padding: 10px 20px; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Confirmar Cita</button>
+            <button id="btnMejorNo" style="background-color: #90a4ae; color: white; padding: 10px 20px; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">¡Iu mejor no!</button>
         </div>
     </div>
 </div>
@@ -233,6 +270,9 @@
             </div>
             <p style="color: #d81b60; font-size: 18px; margin-top: 30px; font-weight: bold;">¡Nos vemos el 14! 💕</p>
         </div>
+        <div class="btn-container">
+            <button id="btnVolverPantalla3" style="background-color: #f06292; color: white; padding: 8px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Inicio</button>
+        </div>
     </div>
 </div>
 
@@ -247,7 +287,7 @@
             </div>
         </div>
         <div class="btn-container">
-            <button id="btnVolver" style="background-color: #f06292; color: white; padding: 14px 35px; font-size: 20px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Volver al inicio</button>
+            <button id="btnVolver" style="background-color: #f06292; color: white; padding: 8px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Inicio</button>
         </div>
     </div>
 </div>
@@ -262,6 +302,8 @@ const imgGif = document.getElementById('imgGif');
 const btnConfirmar = document.getElementById('btnConfirmar');
 const btnMejorNo = document.getElementById('btnMejorNo');
 const btnVolver = document.getElementById('btnVolver');
+const btnVolverPantalla3 = document.getElementById('btnVolverPantalla3');
+const musicaFondo = document.getElementById('musicaFondo');
 const heartRain = document.getElementById('heartRain');
 
 // Función para reproducir sonidos
@@ -355,9 +397,71 @@ for (let i = 0; i < 50; i++) {
     createHeart();
 }
 
+function lanzarConfetti() {
+    const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081'];
+    
+    for (let i = 0; i < 50; i++) {
+        const confeti = document.createElement('div');
+        confeti.style.position = 'fixed';
+        confeti.style.width = '10px';
+        confeti.style.height = '10px';
+        confeti.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+        confeti.style.left = Math.random() * 100 + '%';
+        confeti.style.top = '-10px';
+        confeti.style.borderRadius = '50%';
+        confeti.style.pointerEvents = 'none';
+        confeti.style.zIndex = '1000';
+        confeti.style.opacity = '0.8';
+        
+        document.body.appendChild(confeti);
+        
+        const duration = Math.random() * 2 + 2;
+        const xMove = (Math.random() - 0.5) * 200;
+        
+        let top = -10;
+        let left = parseFloat(confeti.style.left);
+        let opacity = 0.8;
+        
+        const interval = setInterval(() => {
+            top += 3;
+            opacity -= 0.02;
+            confeti.style.top = top + 'px';
+            confeti.style.left = (left + Math.sin(top / 50) * 2) + 'px';
+            confeti.style.opacity = opacity;
+            
+            if (top > window.innerHeight) {
+                clearInterval(interval);
+                confeti.remove();
+            }
+        }, 20);
+    }
+}
+
 function cambiarPantalla(num) {
-    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
-    document.getElementById('pantalla' + num).classList.add('activa');
+    document.querySelectorAll('.pantalla').forEach(p => {
+        p.classList.remove('activa');
+        p.classList.remove('zoom-in');
+    });
+    const pantalla = document.getElementById('pantalla' + num);
+    pantalla.classList.add('activa');
+    
+    // Agregar zoom solo a pantalla 3
+    if (num === 3) {
+        pantalla.classList.add('zoom-in');
+        // Reproducir confetti en pantalla 3
+        setTimeout(() => {
+            lanzarConfetti();
+        }, 100);
+    }
+    
+    // Reproducir música en pantalla 3
+    if (num === 3) {
+        musicaFondo.volume = 0.5;
+        musicaFondo.play().catch(e => console.log('No se pudo reproducir la música'));
+    } else {
+        musicaFondo.pause();
+        musicaFondo.currentTime = 0;
+    }
 }
 
 function mostrarInvitacion() {
@@ -558,6 +662,7 @@ btnNo.addEventListener('click', activarNo);
 btnConfirmar.addEventListener('click', mostrarDetallesCita);
 btnMejorNo.addEventListener('click', mostrarGifTriste);
 btnVolver.addEventListener('click', volverAlInicio);
+btnVolverPantalla3.addEventListener('click', volverAlInicio);
 
 });
 </script>

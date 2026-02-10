@@ -180,9 +180,12 @@
         height: 100%;
         justify-content: center;
         align-items: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
     }
     .pantalla.activa {
         display: flex !important;
+        opacity: 1;
     }
 </style>
 </head>
@@ -243,6 +246,60 @@ const imgGif = document.getElementById('imgGif');
 const btnConfirmar = document.getElementById('btnConfirmar');
 const heartRain = document.getElementById('heartRain');
 
+// Función para reproducir sonidos
+function reproducirSonido(tipo) {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    if (tipo === 'si') {
+        // Sonido alegre para SÍ
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        osc.frequency.value = 800;
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.1);
+        
+        // Segunda nota
+        setTimeout(() => {
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+            
+            osc2.connect(gain2);
+            gain2.connect(audioContext.destination);
+            
+            osc2.frequency.value = 1000;
+            gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            osc2.start(audioContext.currentTime);
+            osc2.stop(audioContext.currentTime + 0.1);
+        }, 100);
+        
+    } else if (tipo === 'no') {
+        // Sonido triste para NO
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        osc.frequency.setValueAtTime(600, audioContext.currentTime);
+        osc.frequency.linearRampToValueAtTime(400, audioContext.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+        
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.2);
+    }
+}
+
+
 let escalaSi = 1;
 let escalaNo = 1;
 let primeraVez = true;
@@ -286,10 +343,12 @@ function cambiarPantalla(num) {
 }
 
 function mostrarInvitacion() {
+    reproducirSonido('si');
     cambiarPantalla(2);
 }
 
 function mostrarDetallesCita() {
+    reproducirSonido('si');
     cambiarPantalla(3);
 }
 
@@ -302,6 +361,7 @@ function shakeCard() {
 }
 
 function activarNo() {
+    reproducirSonido('no');
     contadorNo++;
     textoNo.style.display = "block";
     shakeCard();
@@ -318,7 +378,7 @@ function activarNo() {
         if (!isMovingMode) activarModoMovimientoLibre();
     } else if (contadorNo >= 2) {
         textoNo.innerHTML = "¿POR QUÉ DECIS NO TODAVIA? 😭💔";
-        imgGif.src = "https://i.ibb.co/C5dZstcx/Grabacindepantalla2026-02-08212636-ezgif-com-video-to-gif-converter.gif";
+        imgGif.src = "https://i.ibb.co/vCBmPXbx/STK-20250727-WA0007.webp";
     } else {
         textoNo.innerHTML = "¿POR QUÉ APRETÁS EL NO? 😭";
         imgGif.src = "https://i.ibb.co/C5dZstcx/Grabacindepantalla2026-02-08212636-ezgif-com-video-to-gif-converter.gif";
@@ -396,7 +456,10 @@ function activarNo() {
                     btnFlood.style.animationDelay = (i * 0.003) + 's';
                     btnFlood.style.animationDuration = (Math.random() * 0.6 + 1.8) + 's';
                     
-                    btnFlood.addEventListener('click', mostrarInvitacion);
+                    btnFlood.addEventListener('click', () => {
+                        reproducirSonido('si');
+                        mostrarInvitacion();
+                    });
                     card.appendChild(btnFlood);
                 }, i * 5);
             }

@@ -301,7 +301,7 @@
             <p style="color: #d81b60; font-size: 18px; margin-top: 30px; font-weight: bold;">¡Nos vemos el 14! 💕</p>
         </div>
         <div class="btn-container">
-            <button id="btnVolverPantalla3" style="background-color: #f06292; color: white; padding: 8px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Inicio</button>
+            <button id="btnVolverPantalla3" style="background-color: #f06292; color: white; padding: 8px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Volver</button>
         </div>
     </div>
 </div>
@@ -317,7 +317,7 @@
             </div>
         </div>
         <div class="btn-container">
-            <button id="btnVolver" style="background-color: #f06292; color: white; padding: 8px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Inicio</button>
+            <button id="btnVolver" style="background-color: #f06292; color: white; padding: 8px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;">Volver</button>
         </div>
     </div>
 </div>
@@ -397,6 +397,7 @@ let primeraVez = true;
 let contadorNo = 0;
 let isMovingMode = false;
 let moveInterval = null;
+let pantallActual = 1;
 
 
 
@@ -458,6 +459,9 @@ function cambiarPantalla(num) {
     const pantalla = document.getElementById('pantalla' + num);
     pantalla.classList.add('activa');
     
+    // Rastrear pantalla actual
+    pantallActual = num;
+    
     // Agregar zoom solo a pantalla 3
     if (num === 3) {
         pantalla.classList.add('zoom-in');
@@ -479,42 +483,48 @@ function mostrarGifTriste() {
     cambiarPantalla(4);
 }
 
-function volverAlInicio() {
+function volverAtras() {
     reproducirSonido('si');
-    // Resetear todas las variables
-    contadorNo = 0;
-    escalaSi = 1;
-    primeraVez = true;
-    isMovingMode = false;
-    if (moveInterval) clearInterval(moveInterval);
     
-    // Eliminar todos los botones de explosión del DOM
-    const botonesExplosion = document.querySelectorAll('.btn-si-flood');
-    botonesExplosion.forEach(btn => btn.remove());
+    // Retroceder una pantalla
+    const pantallasValidas = {
+        2: 1,  // De invitación va a inicio
+        3: 1,  // De ubicación va a inicio
+        4: 1   // De rechazo va a inicio
+    };
     
-    // Resetear estilos de botones
-    btnSi.style.transform = 'scale(1)';
-    btnSi.style.opacity = '1';
-    btnSi.style.pointerEvents = 'auto';
-    btnNo.style.opacity = '1';
-    btnNo.style.pointerEvents = 'auto';
-    btnNo.style.position = 'relative';
-    btnNo.style.left = '0';
-    btnNo.style.top = '0';
-    btnNo.style.transform = 'scale(1)';
-    btnNo.classList.remove('moving');
-    
-    // Resetear gif y texto
-    imgGif.src = "https://i.ibb.co/Gfkxj1m4/Grabacindepantalla2026-02-08212818-ezgif-com-video-to-gif-converter.gif";
-    textoNo.style.display = 'none';
-    textoNo.innerHTML = '';
-    
-    // Limpiar input de login
-    inputNombre.value = '';
-    mensajeError.style.display = 'none';
-    
-    // Volver a pantalla 0 (login)
-    cambiarPantalla(0);
+    if (pantallasValidas[pantallActual]) {
+        const nuevaPantalla = pantallasValidas[pantallActual];
+        
+        // Resetear todo si volvemos a pantalla 1
+        if (nuevaPantalla === 1) {
+            contadorNo = 0;
+            escalaSi = 1;
+            primeraVez = true;
+            isMovingMode = false;
+            if (moveInterval) clearInterval(moveInterval);
+            
+            const botonesExplosion = document.querySelectorAll('.btn-si-flood');
+            botonesExplosion.forEach(btn => btn.remove());
+            
+            btnSi.style.transform = 'scale(1)';
+            btnSi.style.opacity = '1';
+            btnSi.style.pointerEvents = 'auto';
+            btnNo.style.opacity = '1';
+            btnNo.style.pointerEvents = 'auto';
+            btnNo.style.position = 'relative';
+            btnNo.style.left = '0';
+            btnNo.style.top = '0';
+            btnNo.style.transform = 'scale(1)';
+            btnNo.classList.remove('moving');
+            
+            imgGif.src = "https://i.ibb.co/Gfkxj1m4/Grabacindepantalla2026-02-08212818-ezgif-com-video-to-gif-converter.gif";
+            textoNo.style.display = 'none';
+            textoNo.innerHTML = '';
+        }
+        
+        cambiarPantalla(nuevaPantalla);
+    }
 }
 
 function shakeCard() {
@@ -582,9 +592,11 @@ function activarNo() {
         btnSi.style.transform = `scale(0)`;
         btnSi.style.opacity = '0';
         btnSi.style.pointerEvents = 'none';
-
+        
+        // Crear explosión de 200 botones Sí
         setTimeout(() => {
-            const card = document.querySelector('.card');
+            const pantalla1 = document.getElementById('pantalla1');
+            const card = pantalla1.querySelector('.card');
             const cardRect = card.getBoundingClientRect();
             const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081', '#d81b60'];
             
@@ -625,6 +637,7 @@ function activarNo() {
                         reproducirSonido('si');
                         mostrarInvitacion();
                     });
+                    
                     card.appendChild(btnFlood);
                 }, i * 5);
             }
@@ -669,8 +682,8 @@ btnSi.addEventListener('click', mostrarInvitacion);
 btnNo.addEventListener('click', activarNo);
 btnConfirmar.addEventListener('click', mostrarDetallesCita);
 btnMejorNo.addEventListener('click', mostrarGifTriste);
-btnVolver.addEventListener('click', volverAlInicio);
-btnVolverPantalla3.addEventListener('click', volverAlInicio);
+btnVolver.addEventListener('click', volverAtras);
+btnVolverPantalla3.addEventListener('click', volverAtras);
 
 });
 </script>

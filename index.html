@@ -397,46 +397,6 @@ for (let i = 0; i < 50; i++) {
     createHeart();
 }
 
-function lanzarConfetti() {
-    const colores = ['#f06292', '#ec407a', '#e91e63', '#c2185b', '#ff80ab', '#ff4081'];
-    
-    for (let i = 0; i < 50; i++) {
-        const confeti = document.createElement('div');
-        confeti.style.position = 'fixed';
-        confeti.style.width = '10px';
-        confeti.style.height = '10px';
-        confeti.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
-        confeti.style.left = Math.random() * 100 + '%';
-        confeti.style.top = '-10px';
-        confeti.style.borderRadius = '50%';
-        confeti.style.pointerEvents = 'none';
-        confeti.style.zIndex = '1000';
-        confeti.style.opacity = '0.8';
-        
-        document.body.appendChild(confeti);
-        
-        const duration = Math.random() * 2 + 2;
-        const xMove = (Math.random() - 0.5) * 200;
-        
-        let top = -10;
-        let left = parseFloat(confeti.style.left);
-        let opacity = 0.8;
-        
-        const interval = setInterval(() => {
-            top += 3;
-            opacity -= 0.02;
-            confeti.style.top = top + 'px';
-            confeti.style.left = (left + Math.sin(top / 50) * 2) + 'px';
-            confeti.style.opacity = opacity;
-            
-            if (top > window.innerHeight) {
-                clearInterval(interval);
-                confeti.remove();
-            }
-        }, 20);
-    }
-}
-
 function cambiarPantalla(num) {
     document.querySelectorAll('.pantalla').forEach(p => {
         p.classList.remove('activa');
@@ -448,10 +408,6 @@ function cambiarPantalla(num) {
     // Agregar zoom solo a pantalla 3
     if (num === 3) {
         pantalla.classList.add('zoom-in');
-        // Reproducir confetti en pantalla 3
-        setTimeout(() => {
-            lanzarConfetti();
-        }, 100);
     }
     
     // Reproducir música en pantalla 3
@@ -488,6 +444,10 @@ function volverAlInicio() {
     primeraVez = true;
     isMovingMode = false;
     if (moveInterval) clearInterval(moveInterval);
+    
+    // Eliminar todos los botones de explosión del DOM
+    const botonesExplosion = document.querySelectorAll('.btn-si-flood');
+    botonesExplosion.forEach(btn => btn.remove());
     
     // Resetear estilos de botones
     btnSi.style.transform = 'scale(1)';
